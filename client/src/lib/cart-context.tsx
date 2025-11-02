@@ -1,5 +1,16 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import type { Product, CartItem } from "@shared/schema";
+
+type Product = {
+  id: number;
+  price: number;
+  // add other product fields as needed
+  [key: string]: any;
+};
+
+type CartItem = {
+  product: Product;
+  quantity: number;
+};
 
 type CartContextType = {
   items: CartItem[];
