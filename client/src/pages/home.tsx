@@ -5,8 +5,20 @@ import { ProductCard } from "@/components/product-card";
 import { ProductGridSkeleton } from "@/components/product-skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import type { Product } from "@shared/schema";
 import { motion } from "framer-motion";
+
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  image: string;
+  rating: {
+    rate: number;
+    count: number;
+  };
+}
 
 export default function Home() {
   const { data: products, isLoading } = useQuery<Product[]>({

@@ -6,17 +6,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { CartProvider } from "@/lib/cart-context";
 import { Header } from "@/components/header";
-import { useAuth } from "@/hooks/useAuth";
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
 import Cart from "@/pages/cart";
-import AdminLogin from "@/pages/admin-login";
-import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <>
@@ -26,17 +22,6 @@ function Router() {
         <Route path="/products" component={Products} />
         <Route path="/product/:id" component={ProductDetail} />
         <Route path="/cart" component={Cart} />
-        <Route path="/admin">
-          {isLoading ? (
-            <div className="min-h-screen flex items-center justify-center">
-              <p className="text-lg text-muted-foreground">Loading...</p>
-            </div>
-          ) : isAuthenticated ? (
-            <AdminDashboard />
-          ) : (
-            <AdminLogin />
-          )}
-        </Route>
         <Route component={NotFound} />
       </Switch>
     </>

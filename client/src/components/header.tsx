@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTheme } from "@/lib/theme-provider";
 import { useCart } from "@/lib/cart-context";
-import { useAuth } from "@/hooks/useAuth";
 import {
   Sheet,
   SheetContent,
@@ -15,7 +14,6 @@ import { useState } from "react";
 export function Header() {
   const { theme, toggleTheme } = useTheme();
   const { itemCount } = useCart();
-  const { isAuthenticated, user } = useAuth();
   const [location, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -102,16 +100,7 @@ export function Header() {
             </Button>
 
             {/* User menu */}
-            {isAuthenticated ? (
-              <Link href="/admin">
-                <a>
-                  <Button variant="ghost" size="icon" data-testid="button-admin">
-                    <User className="h-5 w-5" />
-                    <span className="sr-only">Admin panel</span>
-                  </Button>
-                </a>
-              </Link>
-            ) : null}
+    
 
             {/* Mobile menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -136,19 +125,7 @@ export function Header() {
                       </a>
                     </Link>
                   ))}
-                  {isAuthenticated && (
-                    <Link href="/admin">
-                      <a onClick={() => setMobileMenuOpen(false)}>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start"
-                          data-testid="link-mobile-admin"
-                        >
-                          Admin Panel
-                        </Button>
-                      </a>
-                    </Link>
-                  )}
+                 
                 </nav>
               </SheetContent>
             </Sheet>

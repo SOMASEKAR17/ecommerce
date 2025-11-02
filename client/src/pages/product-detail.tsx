@@ -1,14 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
-import { Star, ShoppingCart, ArrowLeft, Package, Shield, Truck } from "lucide-react";
+import {
+  Star,
+  ShoppingCart,
+  ArrowLeft,
+  Package,
+  Shield,
+  Truck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/lib/cart-context";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import type { Product } from "@shared/schema";
 import { motion } from "framer-motion";
+
+// Define the Product type according to the FakeStoreAPI response
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  image: string;
+  rating: {
+    rate: number;
+    count: number;
+  };
+}
 
 export default function ProductDetail() {
   const [, params] = useRoute("/product/:id");
@@ -17,8 +37,14 @@ export default function ProductDetail() {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
+  // ✅ Fetch product from FakeStoreAPI
   const { data: product, isLoading } = useQuery<Product>({
-    queryKey: [`/api/products/${productId}`],
+    queryKey: ["product", productId],
+    queryFn: async () => {
+      const res = await fetch(`https://fakestoreapi.com/products/${productId}`);
+      if (!res.ok) throw new Error("Failed to fetch product");
+      return res.json();
+    },
     enabled: !!productId,
   });
 
@@ -107,7 +133,10 @@ export default function ProductDetail() {
             </Badge>
 
             {/* Title */}
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4" data-testid="text-product-title">
+            <h1
+              className="text-3xl sm:text-4xl font-bold mb-4"
+              data-testid="text-product-title"
+            >
               {product.title}
             </h1>
 
@@ -160,7 +189,10 @@ export default function ProductDetail() {
                 >
                   -
                 </Button>
-                <span className="text-xl font-medium w-12 text-center" data-testid="text-quantity">
+                <span
+                  className="text-xl font-medium w-12 text-center"
+                  data-testid="text-quantity"
+                >
                   {quantity}
                 </span>
                 <Button
@@ -222,6 +254,12 @@ export default function ProductDetail() {
   );
 }
 
-function Label({ children, className }: { children: React.ReactNode; className?: string }) {
+function Label({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <label className={className}>{children}</label>;
 }

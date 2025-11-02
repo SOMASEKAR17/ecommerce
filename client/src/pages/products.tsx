@@ -18,14 +18,30 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import type { Product, Category } from "@shared/schema";
+
+/**
+ * Minimal Product type matching FakeStoreAPI responses.
+ * Extend with additional fields if your components require them.
+ */
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  category: string;
+  description?: string;
+  image?: string;
+  rating?: {
+    rate: number;
+    count: number;
+  };
+}
 
 const ITEMS_PER_PAGE = 12;
 
 export default function Products() {
   const [location] = useLocation();
-  const params = new URLSearchParams(location.split('?')[1] || '');
-  const categoryParam = params.get('category');
+  const params = new URLSearchParams(location.split("?")[1] || "");
+  const categoryParam = params.get("category");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -35,12 +51,24 @@ export default function Products() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
 
+  // ✅ Fetch products from FakeStoreAPI
   const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
+    queryKey: ["products"],
+    queryFn: async () => {
+      const res = await fetch("https://fakestoreapi.com/products");
+      if (!res.ok) throw new Error("Failed to fetch products");
+      return res.json();
+    },
   });
 
-  const { data: categories } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
+  // ✅ Fetch categories from FakeStoreAPI
+  const { data: categories } = useQuery<string[]>({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const res = await fetch("https://fakestoreapi.com/products/categories");
+      if (!res.ok) throw new Error("Failed to fetch categories");
+      return res.json();
+    },
   });
 
   // Update selected categories when URL param changes
@@ -95,7 +123,10 @@ export default function Products() {
   };
 
   const hasActiveFilters =
-    searchQuery || selectedCategories.length > 0 || priceRange[0] > 0 || priceRange[1] < 1000;
+    searchQuery ||
+    selectedCategories.length > 0 ||
+    priceRange[0] > 0 ||
+    priceRange[1] < 1000;
 
   const FilterContent = () => (
     <div className="space-y-6">
@@ -109,7 +140,6 @@ export default function Products() {
                 id={`category-${category}`}
                 checked={selectedCategories.includes(category)}
                 onCheckedChange={() => toggleCategory(category)}
-                data-testid={`checkbox-category-${category}`}
               />
               <label
                 htmlFor={`category-${category}`}
@@ -134,18 +164,12 @@ export default function Products() {
           value={priceRange}
           onValueChange={setPriceRange}
           className="mb-2"
-          data-testid="slider-price-range"
         />
       </div>
 
       {/* Clear Filters */}
       {hasActiveFilters && (
-        <Button
-          variant="outline"
-          onClick={clearFilters}
-          className="w-full"
-          data-testid="button-clear-filters"
-        >
+        <Button variant="outline" onClick={clearFilters} className="w-full">
           Clear All Filters
         </Button>
       )}
@@ -173,14 +197,13 @@ export default function Products() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
-              data-testid="input-search"
             />
           </div>
 
           {/* Mobile Filter Toggle */}
           <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="outline" data-testid="button-mobile-filters">
+              <Button variant="outline">
                 <SlidersHorizontal className="h-5 w-5 mr-2" />
                 Filters
                 {hasActiveFilters && (
@@ -205,16 +228,11 @@ export default function Products() {
         {hasActiveFilters && (
           <div className="flex flex-wrap gap-2 mb-6">
             {selectedCategories.map((category) => (
-              <Badge
-                key={category}
-                variant="secondary"
-                className="capitalize gap-1"
-              >
+              <Badge key={category} variant="secondary" className="capitalize gap-1">
                 {category}
                 <button
                   onClick={() => toggleCategory(category)}
                   className="ml-1 hover-elevate rounded-full"
-                  data-testid={`button-remove-filter-${category}`}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -241,9 +259,7 @@ export default function Products() {
                 <p className="text-xl text-muted-foreground mb-4">
                   No products found
                 </p>
-                <Button onClick={clearFilters} data-testid="button-clear-filters-empty">
-                  Clear Filters
-                </Button>
+                <Button onClick={clearFilters}>Clear Filters</Button>
               </div>
             ) : (
               <>

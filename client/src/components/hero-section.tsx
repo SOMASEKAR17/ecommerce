@@ -1,22 +1,18 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import heroImage from "@assets/generated_images/E-commerce_hero_lifestyle_image_739c85ad.png";
 
 export function HeroSection() {
   return (
     <section className="relative h-[60vh] md:h-[70vh] overflow-hidden">
-      {/* Hero Image with dark overlay gradient */}
       <div className="absolute inset-0">
         <img
-          src={heroImage}
+          src="E-commerce_hero_lifestyle_image_739c85ad.png"
           alt="Curated collection of premium products"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
       </div>
-
-      {/* Content */}
       <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center h-full text-center">
           <motion.div
